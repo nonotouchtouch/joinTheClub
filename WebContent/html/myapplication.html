@@ -1,0 +1,119 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<script src="https://apps.bdimg.com/libs/jquery/2.1.4/jquery.min.js">
+</script>
+<title>社团申请记录</title>
+<style>
+body {
+	font: normal 11px auto "Trebuchet MS", Verdana, Arial, Helvetica,
+		sans-serif;
+	color: #4f6b72;
+	background: #E6EAE9;
+}
+
+input {
+	background-color: red;
+	width: 100px;
+	height: 50px;
+	font-size: 20px;
+	color: white;
+	font-weight: bold;
+	border-radius: 10px;
+}
+</style>
+<script type="text/javascript" charset="UTF-8">
+var dangqian=1;
+window.onload=showall(0);
+
+function display(response){
+	var json = eval('('+response+')');
+	if(dangqian>(json.total+1)/json.count){
+		alert("已经是最后一页")
+		dangqian=(json.total+1)/json.count;
+		
+	}
+	json=json.rows;
+	
+	if(json.length==0){
+		response="<br><h1>没有更多信息咯。</h1>"
+	}
+	else{				
+		response="<table border=1><tr><th>序号</th><th>社团名称</th><th> 社团ID </th><th> 社团性质 </th><th> 社团星级 </th><th> 申请时间 </th><th> 申请状态 </th></tr>";
+		var j = 1;
+		for(i=0;i<json.length;i++) {
+            response+="<tr>";
+			response+="<td align=center> " + j + "</td>";
+			response+="<td align=center> " + json[i].cName + "</td>";
+			response+="<td align=center> " + json[i].clubId + " </td>";
+			response+="<td align=center> " + json[i].cType + "</td>";
+			response+="<td align=center> " + json[i].cStar + "星</td>";
+			response+="<td align=center> " + json[i].date + "</td>";
+			if(json[i].state==1)
+			response+="<td align=center> 申请中</td>";
+			else if(json[i].state==2){
+				response+="<td align=center>申请通过 </td>";}
+			else if(json[i].state==3){
+				response+="<td align=center>申请被拒</td>";}
+			
+
+			j++;
+			response+="</tr>";
+		}
+		response+="</table>";
+		response+="<div><input type=button value=上一页 onclick=showall(-1)></input>"
+			response+="<input type=button value=下一页 onclick=showall(1)></input><div>"
+	}		
+				
+	var d1 = document.getElementById("div");
+	d1.innerHTML = response;
+}
+
+	function showall(page) {
+		dangqian=dangqian+page;
+		if(dangqian<1)
+		{alert("已经到达第一页");
+		dangqian=1;
+		}
+
+		var ajax;
+		if (window.XMLHttpRequest) {
+			ajax = new XMLHttpRequest();
+		} else if (window.ActiveXObject) {
+			ajax = new ActiveXObject("Microsoft.XMLHTTP");
+		} else {
+			alert('not support ajax');
+			return false;
+		}
+
+		ajax.onreadystatechange = function() {
+			if (ajax.readyState == 4 && ajax.status == 200) {
+				//获取服务器的响应数据 ，并更新到页面上
+				var response = ajax.responseText;
+				display(response);
+				
+			
+			}
+		}
+		ajax.open('get', '/joinTheClub/myapplication/'+dangqian, true);
+		ajax.send();
+	}
+	
+</script>
+
+</head>
+<body>
+	<center>
+	<div>
+		<h1>welcome~以下是有关你的申请记录</h1>
+		<div id="div"></div>
+				<a href="/joinTheClub/html/welcome.html"><input
+						type="button" value="返回上级"></a>
+
+</div>
+		
+	</center>
+</body>
+</html>

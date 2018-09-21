@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script src="https://apps.bdimg.com/libs/jquery/2.1.4/jquery.min.js">
+</script>
+<title>学生注册</title>
+<meta charset="UTF-8">
+<script type="text/javascript">
+window.onload=function getStuID(){
+	if(window.XMLHttpRequest){
+		ajax = new XMLHttpRequest();
+	}else if(window.ActiveXObject){
+		ajax = new ActiveXObject("Microsoft.XMLHTTP");
+	}else{
+		alert('not support ajax');
+		return false;
+	}
+	ajax.onreadystatechange = function(){
+		if(ajax.readyState==4&&ajax.status==200){
+			var stuid=ajax.responseText;
+			document.getElementById('sId').value=stuid;
+		}
+	}
+	ajax.open('get','/joinTheClub/getid.do',true);
+	ajax.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+	ajax.send();
+}
+$(document).ready(function(){
+		
+  $("input").focus(function(){
+    $(this).css("background-color","#cccccc");
+  });
+  $("input").blur(function(){
+    $(this).css("background-color","#ffffff");
+  });
+});
+
+
+
+function addstu(){
+	var sId=document.getElementById("sId").value;
+	var sName=document.getElementById("sName").value;
+	var sex=$('input:radio[name="sex"]:checked').val();
+	var sDept=document.getElementById("sDept").value;
+	var sDate=document.getElementById("sDate").value;
+	var sPwd=document.getElementById("sPwd").value;
+	if(sId==""){alert("ID自动生成失败，请刷新页面重试")}
+	else if(sName=="") {alert("请输入姓名")}
+	else if(sex==null){alert("请选择性别")}
+	else if(sDept==0){alert("请选择学院")}
+	else if(sDate==""){alert("请选择日期")}
+	else if(sPwd==""){alert("请创建密码")}
+	var stu=[];
+	var row={};
+	row.sId=sId;
+	row.sName=sName;
+	row.sex=sex;
+	row.sDept=sDept;
+	row.sDate=sDate;
+	row.sPwd=sPwd;
+	stu.push(row);
+	var student =JSON.stringify(stu);
+	console.log(student);
+
+	if(window.XMLHttpRequest){
+		ajax = new XMLHttpRequest();
+	}else if(window.ActiveXObject){
+		ajax = new ActiveXObject("Microsoft.XMLHTTP");
+	}else{
+		alert('not support ajax');
+		return false;
+	}
+	ajax.onreadystatechange = function(){
+		if(ajax.readyState==4&&ajax.status==200){
+		
+			var bl = ajax.responseText;
+			if(bl=="true"){
+				window.location.href="/joinTheClub/html/signupsuccsee.html?id="+sId;
+			}
+			
+		}
+	}
+	var msg="sId="+sId;
+	msg+="&sName="+sName;
+	msg+="&sex="+sex;
+	msg+="&sDept="+sDept;
+ 	msg+="&sDate="+sDate;
+ 	msg+="&sPwd="+sPwd;
+	ajax.open('post','../signup',true);
+	ajax.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+	ajax.send(msg);
+}
+</script>
+</head>
+<style>body {
+    font: normal 11px auto "Trebuchet MS", Verdana, Arial, Helvetica, sans-serif;
+    color: #4f6b72;
+    background: #E6EAE9;
+}</style>
+
+<body>
+<!-- <script type="text/javascript">
+$(document).ready(function(){
+	if(document.getElementById("sId").value==""){
+		document.execCommand('Refresh');
+	}
+});
+</script> -->
+<center>
+  <h1>学生注册页面</h1>
+	
+
+  
+  <table>
+  <tr><td>学号：</td><td><input type="text" name="sId" id="sId" readonly="readonly" /></td></tr>
+  
+    <tr>
+      <td>姓名:</td>
+      <td><input type="text" id="sName"  placeholder="请输入姓名" required /> </td> 
+    </tr>
+    
+    
+ <tr><td>性别</td>
+    <td> 男  <input type="radio" name="sex" id="sex" value="0" />
+           女<input type="radio" name="sex"  value="1" required/>  </td> </tr>
+    
+    <tr>
+   	<td>院系选择:</td>
+    	<td><select name="sDept" id="sDept">
+    <script> $(function () {
+        $.ajax({
+            url: '/joinTheClub/getDept',
+            type: 'GET',
+            dataType: 'json',
+            timeout: 1000,
+            cache: false,
+            success: succFunction //成功执行方法  
+        })
+       
+        function succFunction(res) {
+        json = eval(res);
+        response="";
+            $.each(json, function (index, item) {
+               response+=" <option value="+json[index].id+">"+json[index].dName+"</option>";         
+            });
+            document.getElementById("sDept").innerHTML = response;
+        
+          
+        }
+    });
+   </script>
+    </select>
+    </td>
+    </tr>
+    <script language="javascript" src="My97DatePicker/WdatePicker.js"></script> 
+    <tr>    
+      <td for="select-choice">入学日期:</td>
+       <td><input  class="Wdate" id="sDate" onfocus="WdatePicker({dateFmt:'yyyy:MM:dd HH:mm:ss'})"  placeholder="请选择日期" />
+    </td></tr>
+
+
+     
+     
+    <tr>
+      <td>密码:</td>
+     <td> <input type="password" id="sPwd"  placeholder="请创建密码" required />  </td>
+    </tr>
+   
+
+    <tr>
+      <td align="center" colspan="2"><button onclick="addstu();">注册</button>
+      <input type="button"  value="返回" onclick="javascrtpt:window.location.href='/joinTheClub/login.html'" /></center></td>
+
+    </tr>
+    
+    </table>
+ 
+  </center>
+</body>
+</html>

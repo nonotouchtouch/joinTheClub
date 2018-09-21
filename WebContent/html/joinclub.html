@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<script src="https://apps.bdimg.com/libs/jquery/2.1.4/jquery.min.js"></script>
+<title>加入社团</title>
+<style>
+body {
+	font: normal 11px auto "Trebuchet MS", Verdana, Arial, Helvetica,
+		sans-serif;
+	color: #4f6b72;
+	background: #E6EAE9;
+}
+
+input {
+	background-color: red;
+	width: 100px;
+	height: 50px;
+	font-size: 20px;
+	color: white;
+	font-weight: bold;
+	border-radius: 10px;
+}
+</style>
+</head>
+<body>
+<center>
+<h1>请选择有意加入的社团</h1>
+社团类型：<select name="cType" id="cType" onchange="clubtype()"></select>
+    <div id="club">请选择社团类型</div>
+<script> 
+var clubinfo;
+$(function () {
+        $.ajax({
+            url: '/joinTheClub/getalltype',
+            type: 'GET',
+            dataType: 'json',
+            timeout: 1000,
+            cache: false,
+            success: succFunction //成功执行方法  
+        })
+       
+        function succFunction(res) {
+        json = eval(res);
+        response="<option value=0>请选择</option>";
+            $.each(json, function (index, item) {
+               response+=" <option value="+json[index].id+">"+json[index].item+"</option>";         
+            });
+            document.getElementById("cType").innerHTML = response;
+        
+          
+        }
+    });
+    function clubtype(){
+    	type=document.getElementById("cType").value;
+    	var out=" 选择社团：<select name=cName id=cName onchange=club()> </select>";
+       document.getElementById("club").innerHTML = out;
+    	  $(function () {
+    	        $.ajax({
+    	            url: '/joinTheClub/getClubWithType?type='+type,
+    	            type: 'GET',
+    	            dataType: 'json',
+    	            timeout: 1000,
+    	            cache: false,
+    	            success: succFunction //成功执行方法  
+    	        })
+    	       
+    	        function succFunction(res) {
+    	        json = eval(res);
+    	        clubinfo=eval(res);
+    	        response="<option value=0>请选择社团</option>";
+    	            $.each(json, function (index, item) {
+    	               response+=" <option value="+index+">"+json[index].cName+"</option>";         
+    	            });
+    	            document.getElementById("cName").innerHTML = response;
+    	        
+    	          
+    	        }
+    	    });
+
+    }
+    function club(){
+    	var index=document.getElementById("cName").value;
+    	info="社团ID： "+clubinfo[index].clubId;
+    	info+="<br>社团介绍： "+clubinfo[index].cIntro;
+    	info+="<br>社团星级："+clubinfo[index].cStar;
+    	info+="<br>成立时间："+clubinfo[index].cDate;
+    	info+="<br>成员数量："+clubinfo[index].cMembers;
+    	info+="<br><input name=caozuo type=button value=申请加入 onclick=join(\"" + clubinfo[index].clubId
+				+ "\") />";
+    	document.getElementById("clubinfo").innerHTML = info;
+    }
+	function join(cid) {	
+		var ajax;
+		if (window.XMLHttpRequest) {
+			ajax = new XMLHttpRequest();
+		} else if (window.ActiveXObject) {
+			ajax = new ActiveXObject("Microsoft.XMLHTTP");
+		} else {
+			alert('not support ajax');
+			return false;
+		}
+
+		ajax.onreadystatechange = function() {
+			if (ajax.readyState == 4 && ajax.status == 200) {
+				var response = ajax.responseText;
+            		if(response=='true'){
+            			alert("申请成功")
+            		}				
+            		else{
+            			alert("申请失败，你可能有正在审核的申请，或是已经加入该社团了")
+            		}
+				
+			}
+		}
+		ajax.open('get', '/joinTheClub/join?clubID='+cid, true);
+		ajax.send();
+	}
+   </script>
+   
+
+
+   
+ 
+    <div id="clubinfo"></div>
+    
+    </br>
+    	<a href="/joinTheClub/html/welcome.html"><input
+						type="button" value="返回上级"></a></body>
+						</center>
+</html>

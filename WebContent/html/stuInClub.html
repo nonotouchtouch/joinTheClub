@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<script src="https://apps.bdimg.com/libs/jquery/2.1.4/jquery.min.js"></script>
+<title>社团成员</title>
+<style>
+body {
+	font: normal 11px auto "Trebuchet MS", Verdana, Arial, Helvetica,
+		sans-serif;
+	color: #4f6b72;
+	background: #E6EAE9;
+}
+
+input {
+	background-color: red;
+	width: 100px;
+	height: 50px;
+	font-size: 20px;
+	color: white;
+	font-weight: bold;
+	border-radius: 10px;
+}
+</style>
+
+<script type="text/javascript" charset="utf-8">
+var dangqian=1;
+var max=0;
+
+/* 社团名称 */
+function getCname()
+{
+       var query = decodeURI(window.location.search.substring(1));
+       var vars = query.split("&");
+       for (var i=0;i<vars.length;i++) {
+               var pair = vars[i].split("=");              
+               if(pair[0] == 'msg'){return "以下是"+pair[1]+"近期加入成员的信息";}
+       }
+       return(false);
+}
+/* 社团id */
+function getcid()
+{
+       var query = decodeURI(window.location.search.substring(1));
+       var vars = query.split("&");
+       for (var i=0;i<vars.length;i++) {
+               var pair = vars[i].split("=");              
+               if(pair[0] == "cid"){return pair[1];}
+       }
+       return(false);
+}
+/* 社团总人数· */
+
+function max(){	
+		var ajax;
+		if (window.XMLHttpRequest) {
+			ajax = new XMLHttpRequest();
+		} else if (window.ActiveXObject) {
+			ajax = new ActiveXObject("Microsoft.XMLHTTP");
+		} else {
+			alert('not support ajax');
+			return false;
+		}
+		ajax.onreadystatechange = function() {
+			if (ajax.readyState == 4 && ajax.status == 200) {	
+				max= ajax.responseText;						
+		}
+		}
+		ajax.open('get', '/joinTheClub/membersNum?cid='+getcid(), true);
+		ajax.send();
+}
+
+
+
+$(function () {
+        var test= getCname();
+       document.getElementById("msg").innerHTML = test;   
+});
+$(showall(0));
+
+function display(json){
+	if (json.length==0){
+		response="<h3>社团已死，有事烧纸</h3><input type=button value=返回 onclick=javascrtpt:window.location.href='/joinTheClub/html/allClub.html'></input>";}
+		else {
+      response="<table border=1><tr><th>序号</th><th> 姓名 </th><th> 报名时间 </th><th>院系</th></tr>";
+          var j = 1;
+
+		for (i = 0; i < json.length; i++) {
+				response+="<tr><td align=center> " + j + "</td>"
+			+"<td align=center> " + json[i].name + "</td>";
+				
+				response+="<td align=center> " + json[i].date + "</td>"
+				
+				+"<td align=center> "
+						+ json[i].dept	+ "</td>"
+				
+					
+				+"</tr>";
+				j++;}
+		response+="</table>";
+		response+="<div><input type=button value=上一页 onclick=showall(-1)></input>"
+			response+="<input type=button value=下一页 onclick=showall(1)></input>"+
+				"<input type=button value=返回 onclick=javascrtpt:window.location.href='/joinTheClub/html/allClub.html'></input></div>"
+		}
+		
+		var d1 = document.getElementById("div");
+		d1.innerHTML = response;
+		
+	
+}
+
+function showall(page) { 
+		dangqian=dangqian+page;
+		if(dangqian<1){
+			dangqian=1;
+			alert("已经到第一页了。")
+			return;
+		}
+		if(dangqian>5){
+			dangqian=5;
+			alert("非管理者仅能查看10条记录。")
+			return;
+		}
+		
+		var ajax;
+		if (window.XMLHttpRequest) {
+			ajax = new XMLHttpRequest();
+		} else if (window.ActiveXObject) {
+			ajax = new ActiveXObject("Microsoft.XMLHTTP");
+		} else {
+			alert('not support ajax');
+			return false;
+		}
+		ajax.onreadystatechange = function() {	
+			if (ajax.readyState == 4 && ajax.status == 200) {
+				var response = ajax.responseText;
+				response= eval('('+response+')');
+				if(dangqian>(response.total+1)/response.count){
+					alert("已经到达最后一页了。")
+					dangqian=(response.total+1)/response.count;
+				}
+				
+				display(response.rows);		
+		}
+		}
+		ajax.open('get', '/joinTheClub/show?page='+dangqian+'&info='+getcid(), true);
+		ajax.send();
+	
+		}
+
+</script>
+
+</head>
+<body>
+	<center><h1 id="msg"></h1>
+		
+
+		<div id="div"></div>
+	</center>
+</body>
+</html>

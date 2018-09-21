@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script src="https://apps.bdimg.com/libs/jquery/2.1.4/jquery.min.js"></script>
+<meta charset="UTF-8">
+<title>注册成功</title>
+
+<script type="text/javascript">
+function getQueryVariable(variable)
+{
+       var query = window.location.search.substring(1);
+       var vars = query.split("&");
+       for (var i=0;i<vars.length;i++) {
+               var pair = vars[i].split("=");
+               if(pair[0] == variable){return pair[1];}
+       }
+       return(false);
+}
+$(function () {
+ 
+        var test= getQueryVariable("id");
+      //  alert(test);
+        document.getElementById("id").innerHTML = test;
+    
+});
+</script>
+</head>
+<style>body {
+    font: normal 11px auto "Trebuchet MS", Verdana, Arial, Helvetica, sans-serif;
+    color: #4f6b72;
+    background: #E6EAE9;
+}</style>
+<body>
+
+<center><h1>恭喜注册成功</h1>
+请记住你的学号：<div id="id"></div>
+
+<a href="/joinTheClub/login.html">返回登陆</a></center>
+</body>
+</html>

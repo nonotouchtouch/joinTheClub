@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hanming.mapper.ServiceMapper">
+ 
+       <select id="login"  parameterType="Student"   resultType="Student" >
+       select * from student where sId=#{sId} and sPwd=#{sPwd};
+    </select>
+   
+     <insert id="signup"  parameterType="Student" >
+     insert into student values(#{sId},#{sName},#{sex},#{sDept},#{sDate},#{sPwd})
+    </insert>
+    
+    <select id="getMaxID"  resultType="String">
+        SELECT max(sId) FROM  student;
+    </select>
+   
+    <select id="getAllStudent" resultType="Student">
+     SELECT studentallinfo_view.*,cardinfo.money from studentallinfo_view,cardinfo where studentallinfo_view.cid=cardinfo.cid
+    </select>
+    
+ 
+    
+    <delete id="deleteStu" parameterType="String" >
+      delete from student where sno=#{value}
+    </delete>
+    
+    
+      <update id="changepwd" parameterType="Student" >
+      update student set sPwd=#{sPwd}  where sId=#{sId}
+    </update>
+    
+     <select id="alreadyin"  parameterType="Joinclublog" resultType="Joinclublog">
+        SELECT * FROM  joinclublog where sid=#{sid} and cid=#{cid} and (state=2 or state=1);
+    </select>
+    
+    <insert id="join" parameterType="Joinclublog"  >
+    INSERT INTO joinclublog (date, sid, cid, state) VALUES (#{date}, #{sid}, #{cid}, 1);
+    </insert>
+    
+    
+       <select id="myapplication"  parameterType="String" resultType="MyApplicationLog"> 
+       <!--  SELECT * FROM  joinclublog where sid=#{sid}; -->
+       SELECT a.clubId,a.cName,c.item,a.cStar,b.date,b.state FROM joinclub.clubinfo as a,joinclub.joinclublog as b,type as c where a.clubId=b.cid and b.sid=#{sid} and c.id=a.cType;
+    </select>
+    
+     
+       <select id="myApplicationCount"  parameterType="String" resultType="Integer"> 
+     
+       SELECT count(*) FROM joinclub.joinclublog where sid=#{id};
+    </select>
+    
+        <select id="myApplication"  resultType="MyApplicationLog"> 
+       <!--  SELECT * FROM  joinclublog where sid=#{sid}; -->
+       SELECT a.clubId,a.cName,c.item,a.cStar,b.date,b.state FROM joinclub.clubinfo as a,joinclub.joinclublog as b,type as c where a.clubId=b.cid and b.sid=#{0} and c.id=a.cType limit #{1},#{2};
+    </select>
+    
+    
+    
+    
+  <!--   Club   -->
+   <select id="getAllClub" resultType="ClubInfo">
+        select *,item as cTypestr from clubinfo,type where type.id=cType;
+    </select>
+    <select id="getClubWithType" resultType="ClubInfo">
+        select *,item as cTypestr from clubinfo,type where type.id=cType and cType=#{0};
+    </select>
+    
+       <select id="clubinfo"  parameterType="String" resultType="String">  
+        select cIntro from clubinfo where clubId=#{cid};
+    </select>
+    
+       <select id="getType" resultType="ClubType">
+        select * from type;
+    </select>
+    
+    <select id="getOneType" parameterType="Integer" resultType="String">
+        select item from type where id=#{0};
+    </select>
+    
+      <select id="queryTotal"  resultType="Integer">
+        select count(*) from joinclublog where cid=#{info} and state=2; 
+    </select>
+    
+     <select id="queryAll" resultType="ClubMembers">
+        select s.sId as id,s.sName as name,d.dName as dept,j.date as date from dept as d,student as s,joinclublog as j where s.sId=j.sid and j.cid=#{0} and j.state=2 and d.id=s.sDept limit #{1},#{2}
+    </select>
+    
+    
+    <!--   专业 -->
+     <select id="getAllDept" resultType="Dept">
+        select * from dept;
+    </select>
+    
+    
+    
+    
+</mapper>

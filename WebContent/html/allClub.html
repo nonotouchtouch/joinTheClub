@@ -1,0 +1,159 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<script src="https://apps.bdimg.com/libs/jquery/2.1.4/jquery.min.js">
+</script>
+<title>百团大战</title>
+<style>
+body {
+	font: normal 11px auto "Trebuchet MS", Verdana, Arial, Helvetica,
+		sans-serif;
+	color: #4f6b72;
+	background: #E6EAE9;
+}
+
+input {
+	background-color: red;
+	width: 100px;
+	height: 25px;
+	font-size: 15px;
+	color: white;
+	font-weight: bold;
+	border-radius: 10px;
+}
+</style>
+<script type="text/javascript" charset="UTF-8">
+window.onload=showall();
+	function showall() {
+		var ajax;
+		if (window.XMLHttpRequest) {
+			ajax = new XMLHttpRequest();
+		} else if (window.ActiveXObject) {
+			ajax = new ActiveXObject("Microsoft.XMLHTTP");
+		} else {
+			alert('not support ajax');
+			return false;
+		}
+
+		ajax.onreadystatechange = function() {
+			if (ajax.readyState == 4 && ajax.status == 200) {
+				//获取服务器的响应数据 ，并更新到页面上
+				var response = ajax.responseText;
+				var json = eval('('+response+')');
+				
+				
+				if(json.length==0){
+					response="<br><h1>数据库中还没有数据哦.</h1>"
+				}
+				else{				
+					response="<table border=1><tr><th>序号</th><th> 社团ID</th><th> 社团名称 </th><th> 创立时间 </th><th> 社团类型 </th><th>社团星级</th><th>成员数</th><th colspan=3><center>操作</center></th></tr>";
+					var j = 1;
+					for(i=0;i<json.length;i++) {
+                        response+="<tr>";
+						response+="<td align=center> " + j + "</td>";
+						response+="<td align=center> " + json[i].clubId + "</td>";
+						response+="<td align=center> " + json[i].cName + "</td>";
+						response+="<td align=center> " + json[i].cDate + "</td>";
+						response+="<td align=center> " + json[i].cTypestr + "</td>";
+					/* 	  $.ajax({
+					            url: '/joinTheClub/getonetype?type='+json[i].cType,
+					            type: 'GET',
+					            dataType: 'TEXT',
+					            timeout: 1000,
+					            cache: false,
+					            async: false,
+					            success: function(res) {	
+					            	
+					               response+="<td align=center>"+res+" </td>";   }
+						  }) */
+						response+="<td align=center> " + json[i].cStar + "</td>";
+						response+="<td align=center> " + json[i].cMembers + "</td>";
+						response+="<td align=center><div onclick=join(\"" + json[i].clubId
+						+ "\")><input name=caozuo type=button value=申请加入  /></div></td>";
+						
+						response+="<td align=center><div onclick=info(\"" + json[i].clubId
+								+ "\")><input name=caozuo type=button value=社团简介 /></div></td>";
+						response+="<td align=center><a href=/joinTheClub/html/stuInClub.html?msg="+json[i].cName+"&cid="+json[i].clubId+"><input name=caozuo type=button value=查看成员 /></a></td>";
+	
+						j++;
+						response+="</tr>";
+					}
+					response+="</table>";
+				}		
+							
+				var d1 = document.getElementById("div");
+				d1.innerHTML = response;
+			
+			}
+		}
+		ajax.open('get', '../getAllClub', true);
+		ajax.send();
+	}
+	
+	function join(cid) {	
+		var ajax;
+		if (window.XMLHttpRequest) {
+			ajax = new XMLHttpRequest();
+		} else if (window.ActiveXObject) {
+			ajax = new ActiveXObject("Microsoft.XMLHTTP");
+		} else {
+			alert('not support ajax');
+			return false;
+		}
+
+		ajax.onreadystatechange = function() {
+			if (ajax.readyState == 4 && ajax.status == 200) {
+				var response = ajax.responseText;
+            		if(response=='true'){
+            			alert("申请成功")
+            		}				
+            		else{
+            			alert("申请失败，你可能有正在审核的申请，或是已经加入该社团了")
+            		}
+				
+			}
+		}
+		ajax.open('get', '/joinTheClub/join?clubID='+cid, true);
+		ajax.send();
+	}
+	
+	
+	function info(cid) {	
+		var ajax;
+		if (window.XMLHttpRequest) {
+			ajax = new XMLHttpRequest();
+		} else if (window.ActiveXObject) {
+			ajax = new ActiveXObject("Microsoft.XMLHTTP");
+		} else {
+			alert('not support ajax');
+			return false;
+		}
+
+		ajax.onreadystatechange = function() {
+			if (ajax.readyState == 4 && ajax.status == 200) {
+				var response = ajax.responseText;
+            		alert(response);       					
+			}
+		}
+		ajax.open('get', '/joinTheClub/info?clubID='+cid, true);
+		
+		ajax.send();
+	}
+</script>
+
+</head>
+<body>
+	<center>
+	<div>
+		<h1>welcome~以下是在学校注册过的社团信息：</h1>
+		<div id="div"></div>
+				<a href="/joinTheClub/html/welcome.html"><input
+						type="button" value="返回上级"></a>
+
+</div>
+		
+	</center>
+</body>
+</html>
