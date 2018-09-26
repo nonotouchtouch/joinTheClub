@@ -10,18 +10,14 @@ public class IDPool
 {
 	private static int SECOND=5*60;
 	public static int  MAX=0;
-    private static List<Node> xhs=new LinkedList<Node>(); 
+    private static List<Node> idPool=new LinkedList<Node>(); 
     public static Hashtable sessionMaps=new Hashtable();
-    
-    
-    
+       
     synchronized
-    public static boolean add2Pool(String xh)
+    public static boolean add2Pool(String id)
     {
-
-    	Node node=new Node(xh);
-    	xhs.add(node);
-    	return true;
+    	Node node=new Node(id);
+    	return idPool.add(node);   	
     }
     
   
@@ -30,13 +26,13 @@ public class IDPool
     public static String get()
     {   
     	if(MAX==0) return "";	
-        for(int i=0;i<xhs.size();i++)
+        for(int i=0;i<idPool.size();i++)
         {
-        	Node t=xhs.get(i);
+        	Node t=idPool.get(i);
             if(t.isExpire(SECOND)) continue;
             t.data=new Date().getTime();
             System.out.println("get xh from pool");
-            return t.xh;
+            return t.id;
         }
         
         MAX=MAX+1;
@@ -46,15 +42,15 @@ public class IDPool
     }
     
     synchronized
-    public static boolean remove(String xh)
+    public static boolean remove(String id)
     {
-        for(int i=0;i<xhs.size();i++)
+        for(int i=0;i<idPool.size();i++)
         {
-        	Node t=xhs.get(i);
-        	if(t.xh.equals(xh))
+        	Node temp=idPool.get(i);
+        	if(temp.id.equals(id))
         	{
-        		xhs.remove(i);
-        		System.out.println("remove xh from pool");
+        		idPool.remove(i);
+        		System.out.println("remove from pool");
         		return true;
         	}
          
@@ -88,12 +84,12 @@ public class IDPool
 
 class Node
 {
-	String xh;
+	String id;
 	Long  data;
 	
-	Node(String xh)
+	Node(String id)
 	{
-	   this.xh=xh;
+	   this.id=id;
 	   this.data=new Date().getTime();
 
 	}
